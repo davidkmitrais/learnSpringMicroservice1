@@ -23,8 +23,8 @@ public class RatingsResource {
     public UserRating getUserRating(@PathVariable("userId") String userId){
 
         List<Rating> ratings = Arrays.asList(
-                new Rating("1234", 1),
-                new Rating("2345", 2)
+                new Rating("100", 3),
+                new Rating("200", 4)
         );
 
         UserRating userRating = new UserRating();

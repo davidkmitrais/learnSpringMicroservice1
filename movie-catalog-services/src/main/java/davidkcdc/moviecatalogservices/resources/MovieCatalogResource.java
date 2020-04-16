@@ -48,7 +48,7 @@ public class MovieCatalogResource {
                         .block();
                  */
                 //put them all together
-                return new CatalogItem( movie.getName(), "film Transformer", rating.getRating());
+                return new CatalogItem( movie.getName(), movie.getDescription(), rating.getRating());
             })
         .collect(Collectors.toList());
     }
