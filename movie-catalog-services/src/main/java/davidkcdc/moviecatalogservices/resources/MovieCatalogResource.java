@@ -1,5 +1,6 @@
 package davidkcdc.moviecatalogservices.resources;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import davidkcdc.moviecatalogservices.models.CatalogItem;
 import davidkcdc.moviecatalogservices.models.Movie;
 import davidkcdc.moviecatalogservices.models.Rating;
@@ -31,11 +32,12 @@ public class MovieCatalogResource {
     private DiscoveryClient discoveryClient;
 
     @RequestMapping("/{userId}")
+    @HystrixCommand(fallbackMethod = "getFallbackCatalog")
     public List<CatalogItem> getCatalog (@PathVariable("userId") String userId){
 
-        UserRating ratings = restTemplate.getForObject("http://rating-data-service/ratingsdata/users/" + userId, UserRating.class);
+        UserRating userRating = restTemplate.getForObject("http://rating-data-service/ratingsdata/users/" + userId, UserRating.class);
 
-        return ratings.getUserRating().stream().map(rating -> {
+        return userRating.getUserRating().stream().map(rating -> {
                 //Foreach movieId, call movie info service and get details
                 Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + rating.getMovieId(), Movie.class);
 
@@ -51,5 +53,9 @@ public class MovieCatalogResource {
                 return new CatalogItem( movie.getName(), movie.getDescription(), rating.getRating());
             })
         .collect(Collectors.toList());
+    }
+
+    public List<CatalogItem> getFallbackCatalog (@PathVariable("userId") String userId){
+        return Arrays.asList(new CatalogItem("No Movie","",0));
     }
 }
