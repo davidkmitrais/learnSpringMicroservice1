@@ -28,7 +28,7 @@ public class RatingsResource {
         );
 
         UserRating userRating = new UserRating();
-        userRating.setUserRating(ratings);
+        userRating.setRatings(ratings);
         return userRating;
     }
 }
